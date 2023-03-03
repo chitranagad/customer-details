@@ -38,6 +38,13 @@ public class CustomerController {
 	public CustomerResponse saveCustomerFeign(@RequestBody CustomerRequest request) {
 		return service.saveCustomerRequestFeign(request);
 	}
+	
+	@PostMapping("/saveCustomerKafka")
+	//@Retry(name = "customer-detail", fallbackMethod  ="serviceDownResponse")
+	@CircuitBreaker(name = "customer-detail", fallbackMethod  ="serviceDownResponse")
+	public CustomerResponse saveCustomerKafka(@RequestBody CustomerRequest request) {
+		return service.sendCustomerRequestToKafkaBroker(request);
+	}
 
 	@GetMapping(value = "/customerDetails/{id}")
 	public Customer getCustomerDetails(@PathVariable("id") Integer id) {

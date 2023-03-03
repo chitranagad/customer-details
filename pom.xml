@@ -44,6 +44,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-bootstrap</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			</dependency>
+
 		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-feign</artifactId> 
 			<version>1.4.7.RELEASE</version> </dependency> <dependency> <groupId>org.springframework.cloud</groupId> 
 			<artifactId>spring-cloud-starter-ribbon</artifactId> <version>1.4.7.RELEASE</version> 
@@ -110,33 +115,13 @@
 					<mainClass>com.customer.customer.details.CustomerDetailsApplication</mainClass>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<configuration>
-					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-					<username>chitrangad</username>
-					<password>9742902950test</password>
-					<repository>chitrangad/${project.artifactId}.jar</repository>
-					<version>${project.version}</version>
-					<buildArgs>
-						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>default</id>
-						<phase>install</phase>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-						<inherited>false</inherited>
-						<configuration>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>com.spotify</groupId> <artifactId>dockerfile-maven-plugin</artifactId> 
+				<configuration> <useMavenSettingsForAuth>true</useMavenSettingsForAuth> <username>chitrangad</username> 
+				<password>9742902950test</password> <repository>chitrangad/${project.artifactId}.jar</repository> 
+				<version>${project.version}</version> <buildArgs> <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE> 
+				</buildArgs> </configuration> <executions> <execution> <id>default</id> <phase>install</phase> 
+				<goals> <goal>build</goal> <goal>push</goal> </goals> <inherited>false</inherited> 
+				<configuration> </configuration> </execution> </executions> </plugin> -->
 		</plugins>
 		<finalName>customer-details</finalName>
 	</build>

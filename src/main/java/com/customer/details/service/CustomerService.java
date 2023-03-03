@@ -1,6 +1,5 @@
 package com.customer.details.service;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +29,10 @@ public class CustomerService {
 	private CustomerPaymentProxy proxy;
 	@Value("${microservice.payment-service.endpoints.endpoint.uri}")
 	private String PAYMENT_URI;
+	@Autowired
+	private KafkaTemplate<String, Payment> kafkatemplate;
+	@Value("${spring.kafka.producer.topic}")
+	private String topic;
 
 	@Transactional
 	public CustomerResponse saveCustomerRequest(CustomerRequest request) {
@@ -42,20 +46,30 @@ public class CustomerService {
 				: "Order added in cart";
 		return new CustomerResponse(customer, paymentStatus);
 	}
-	
+
 	@Transactional
 	public CustomerResponse saveCustomerRequestFeign(CustomerRequest request) {
 		String paymentStatus = "";
 		Customer customer = request.getCustomer();
 		Payment payment = request.getPayment();
-		customer= repositery.save(customer);
+		customer = repositery.save(customer);
 		payment.setCustomerId(customer.getId());
 		Payment paymentResp = proxy.processPayment(payment);
 		paymentStatus = paymentResp.getStatus().equals("success") ? "payment processing successfully order placed"
 				: "Order added in cart";
 		return new CustomerResponse(customer, paymentStatus);
 	}
-
+	
+	public CustomerResponse sendCustomerRequestToKafkaBroker(CustomerRequest request) {
+		Customer customer = request.getCustomer();
+		Payment payment = request.getPayment();
+		customer = repositery.save(customer);
+		payment.setCustomerId(customer.getId());
+		kafkatemplate.send(topic, payment);
+		
+		return new CustomerResponse(customer, "payment process by kafka broker");
+	}
+	
 	public Optional<Customer> findCustomerById(Integer id) {
 		return repositery.findById(id);
 	}
@@ -63,4 +77,6 @@ public class CustomerService {
 	public List<Customer> findAllCustomer() {
 		return repositery.findAll();
 	}
+
+	
 }
