@@ -17,7 +17,6 @@ import com.customer.details.model.CustomerResponse;
 import com.customer.details.service.CustomerService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 
 @RestController
 @RequestMapping("/customer")

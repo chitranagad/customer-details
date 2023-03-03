@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: CUSTOMER-DETAIL
+  cloud:
+    config:
+      uri:
+      - http://localhost:9092
+      
+      
+server:
+  port: 9090
+  
+  
+logging:
+  file: file//E:/STS/Logs/application.log

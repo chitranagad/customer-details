@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,20 +25,22 @@ public class CustomerService {
 	private CustomerRepositery repositery;
 	@Autowired
 	private RestTemplate template;
-	@Autowired 
- 	private CustomerPaymentProxy proxy;
-	 
-    
+	@Autowired
+	private CustomerPaymentProxy proxy;
+	@Value("${microservice.payment-service.endpoints.endpoint.uri}")
+	private String PAYMENT_URI;
+
 	@Transactional
 	public CustomerResponse saveCustomerRequest(CustomerRequest request) {
 		String paymentStatus = "";
 		Customer customer = request.getCustomer();
 		Payment payment = request.getPayment();
-		customer= repositery.save(customer);
+		customer = repositery.save(customer);
 		payment.setCustomerId(customer.getId());
-		Payment paymentResp = template.postForObject("http://CUSTOMER-PAYMENT/payment/processPay", payment, Payment.class);
-		paymentStatus= paymentResp.getStatus().equals("success")?"payment processing successfully order placed":"Order added in cart";
-		return new CustomerResponse(customer, paymentStatus);	 
+		Payment paymentResp = template.postForObject(PAYMENT_URI, payment, Payment.class);
+		paymentStatus = paymentResp.getStatus().equals("success") ? "payment processing successfully order placed"
+				: "Order added in cart";
+		return new CustomerResponse(customer, paymentStatus);
 	}
 	
 	@Transactional
@@ -47,9 +50,10 @@ public class CustomerService {
 		Payment payment = request.getPayment();
 		customer= repositery.save(customer);
 		payment.setCustomerId(customer.getId());
-		Payment paymentResp= proxy.processPayment(payment);
-		paymentStatus= paymentResp.getStatus().equals("success")?"payment processing successfully order placed":"Order added in cart";
-		return new CustomerResponse(customer, paymentStatus);	 
+		Payment paymentResp = proxy.processPayment(payment);
+		paymentStatus = paymentResp.getStatus().equals("success") ? "payment processing successfully order placed"
+				: "Order added in cart";
+		return new CustomerResponse(customer, paymentStatus);
 	}
 
 	public Optional<Customer> findCustomerById(Integer id) {
